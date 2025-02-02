@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -56,6 +56,8 @@ namespace TrustedUninstaller.Shared
             FreshInstall = 12,
             [XmlEnum("UCPDDisabled")]
             UCPDDisabled = 13,
+            [XmlEnum("OfflineMode")]
+            OfflineMode = 14,
         }
 
         public static async Task<Requirement[]> MetRequirements(this Requirement[] requirements, bool checkNoPendingUpdate = false)
@@ -106,6 +108,9 @@ namespace TrustedUninstaller.Shared
 
             if (requirements.Contains(Requirement.AdministratorPasswordSet))
                 metRequirements.Add(Requirement.AdministratorPasswordSet);
+
+            if (requirements.Contains(Requirement.OfflineMode))
+                if (await new OfflineMode().IsMet()) metRequirements.Add(Requirement.OfflineMode);
             
             return metRequirements.ToArray();
         }
@@ -462,6 +467,16 @@ namespace TrustedUninstaller.Shared
             public bool IsMet(string[] builds)
             {
                 return builds.Any(x => x.Equals(Win32.SystemInfoEx.WindowsVersion.BuildNumber.ToString()));
+            }
+
+            public Task<bool> Meet() => throw new NotImplementedException();
+        }
+
+        public class OfflineMode : RequirementBase, IRequirements
+        {
+            public async Task<bool> IsMet()
+            {
+                return !await new Internet().IsMet();
             }
 
             public Task<bool> Meet() => throw new NotImplementedException();

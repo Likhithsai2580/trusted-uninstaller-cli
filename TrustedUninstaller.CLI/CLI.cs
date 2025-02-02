@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -256,7 +256,7 @@ namespace TrustedUninstaller.CLI
                     using (var progress = new InterLink.InterProgress(async value => { Console.WriteLine(value + "% " + status + "..."); }))
                     {
                         errorsOccurred = await InterLink.ExecuteAsync(() => AmeliorationUtil.RunPlaybook(AmeliorationUtil.Playbook.Path, AmeliorationUtil.Playbook.Name, AmeliorationUtil.Playbook.Version, options.ToArray(),
-                            Environment.CurrentDirectory, progress, reporter, AmeliorationUtil.UseKernelDriver));
+                            Environment.CurrentDirectory, progress, reporter, AmeliorationUtil.UseKernelDriver, await (new Requirements.Internet()).IsMet()));
                     }
                 }
             }
